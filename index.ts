@@ -4,14 +4,27 @@ import fs = require("fs");
 
 async function run(): Promise<void> {
     try {
+        // first two argumnents are different things...
+        var authenticationMethod: string = process.argv[2];
+        var username: string = process.argv[3];
+        var password: string = process.argv[4];
+        var server: string = process.argv[5];
+        var buildDefinitionName: string = process.argv[6];
+
+        var numberOfItemsToFetch: number = 10;
+        if (process.argv.length > 6) {
+            var numberOfItemsToFetchString: string = process.argv[7];
+            numberOfItemsToFetch = parseInt(numberOfItemsToFetchString, 10);
+        }
+
         tfsRestService.initialize(
-            taskConstants.AuthenticationMethodPersonalAccessToken,
-            "whatever",
-            "sww3otrtvfaqi4sqcqqjceq23lxgvlyjfoftqox7272qc3vxyi2q",
-            "https://benjsawesometfstest.visualstudio.com/DefaultCollection/Build Test",
+            authenticationMethod,
+            username,
+            password,
+            server,
             false);
 
-        var testRuns: tfsRestService.ITestRun[] = await tfsRestService.getTestRuns("CI Test", 10);
+        var testRuns: tfsRestService.ITestRun[] = await tfsRestService.getTestRuns(buildDefinitionName, numberOfItemsToFetch);
 
         var testCaseDictionary: { [date: string]: { [name: string]: number } } = {};
         var availableTestCases: string[] = [];

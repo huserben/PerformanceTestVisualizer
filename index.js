@@ -14,8 +14,19 @@ const fs = require("fs");
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            tfsRestService.initialize(taskConstants.AuthenticationMethodPersonalAccessToken, "whatever", "sww3otrtvfaqi4sqcqqjceq23lxgvlyjfoftqox7272qc3vxyi2q", "https://benjsawesometfstest.visualstudio.com/DefaultCollection/Build Test", false);
-            var testRuns = yield tfsRestService.getTestRuns("CI Test", 10);
+            // first two argumnents are different things...
+            var authenticationMethod = process.argv[2];
+            var username = process.argv[3];
+            var password = process.argv[4];
+            var server = process.argv[5];
+            var buildDefinitionName = process.argv[6];
+            var numberOfItemsToFetch = 10;
+            if (process.argv.length > 6) {
+                var numberOfItemsToFetchString = process.argv[7];
+                numberOfItemsToFetch = parseInt(numberOfItemsToFetchString, 10);
+            }
+            tfsRestService.initialize(authenticationMethod, username, password, server, false);
+            var testRuns = yield tfsRestService.getTestRuns(buildDefinitionName, numberOfItemsToFetch);
             var testCaseDictionary = {};
             var availableTestCases = [];
             for (let testRun of testRuns) {
