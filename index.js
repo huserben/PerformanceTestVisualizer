@@ -8,23 +8,64 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const tfsRestService = require("./tfsrestservice");
-const taskConstants = require("./taskconstants");
+const tfsRestService = require("./tfsrestservice.js");
+const taskConstants = require("./taskconstants.js");
+const fs = require("fs");
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             tfsRestService.initialize(taskConstants.AuthenticationMethodPersonalAccessToken, "whatever", "sww3otrtvfaqi4sqcqqjceq23lxgvlyjfoftqox7272qc3vxyi2q", "https://benjsawesometfstest.visualstudio.com/DefaultCollection/Build Test", false);
-            var testRuns = yield tfsRestService.getTestRuns("CI Test", 3);
+            var testRuns = yield tfsRestService.getTestRuns("CI Test", 10);
+            var testCaseDictionary = {};
+            var availableTestCases = [];
             for (let testRun of testRuns) {
-                console.log(`Getting test results of run...`);
                 var testResults = yield tfsRestService.getTestResults(testRun);
                 for (let result of testResults) {
-                    console.log(`Test: ${result.testCaseTitle}`);
-                    console.log(`Result: ${result.outcome}`);
-                    console.log(`Ran for: ${result.durationInMs / 1000} seconds`);
+                    if (result.outcome !== taskConstants.TestRunOutcomePassed) {
+                        continue;
+                    }
+                    var date = new Date(result.startedDate);
+                    var dateRun = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+                    if (!availableTestCases.some(x => x === result.testCaseTitle)) {
+                        availableTestCases.push(result.testCaseTitle);
+                    }
+                    if (testCaseDictionary[dateRun] === undefined) {
+                        testCaseDictionary[dateRun] = {};
+                    }
+                    testCaseDictionary[dateRun][result.testCaseTitle] = result.durationInMs / 1000;
                 }
-                console.log("--------------------------------");
             }
+            const Tab = "\t";
+            const NewLine = "\r\n";
+            var tsvFileString = `date${Tab}`;
+            // write header
+            for (let testCase of availableTestCases) {
+                tsvFileString += `${testCase}${Tab}`;
+            }
+            tsvFileString += `${NewLine}`;
+            for (let key in testCaseDictionary) {
+                if (testCaseDictionary.hasOwnProperty(key)) {
+                    let testResultsByDate = testCaseDictionary[key];
+                    console.log("------------------------------");
+                    console.log(`Test Date: ${key}`);
+                    tsvFileString += `${key}${Tab}`;
+                    for (let testCase of availableTestCases) {
+                        if (testResultsByDate[testCase] === undefined) {
+                            // if there is no value for a testcase on a certain date we set it to null...
+                            testResultsByDate[testCase] = 0;
+                        }
+                        tsvFileString += `${testResultsByDate[testCase]}${Tab}`;
+                        console.log(`${testCase} - Ran for ${testResultsByDate[testCase]} seconds`);
+                    }
+                    tsvFileString += `${NewLine}`;
+                    console.log("------------------------------");
+                }
+            }
+            fs.writeFile("performanceValues.tsv", tsvFileString, function (err) {
+                if (err != null) {
+                    console.log(err);
+                }
+            });
         }
         catch (err) {
             console.log(err);

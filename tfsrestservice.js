@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const WebRequest = require("web-request");
 const fs = require("fs");
 const url = require("url");
+const tfsConstants = require("./tfsconstants");
 const taskConstants = require("./taskconstants");
 let options;
 function initialize(authenticationMethod, username, password, tfsServer, ignoreSslError) {
@@ -18,20 +19,19 @@ function initialize(authenticationMethod, username, password, tfsServer, ignoreS
     switch (authenticationMethod) {
         case taskConstants.AuthenticationMethodOAuthToken:
             console.log("Using OAuth Access Token");
-            // not supported for now...
-            /*var authenticationToken: string;
+            var authenticationToken;
             if (password === null || password === "") {
                 console.log("Trying to fetch authentication token from system...");
                 authenticationToken = `${process.env[tfsConstants.OAuthAccessToken]}`;
-            } else {
+            }
+            else {
                 authenticationToken = password;
             }
-
             options = {
                 baseUrl: baseUrl, auth: {
                     bearer: authenticationToken
                 }
-            };*/
+            };
             break;
         case taskConstants.AuthenticationMethodBasicAuthentication:
             console.log("Using Basic Authentication");

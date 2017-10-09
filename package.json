@@ -17,6 +17,12 @@
   },
   "homepage": "https://github.com/huserben/PerformanceTestVisualizer#readme",
   "devDependencies": {
-    "@types/node": "^8.0.33"
+    "@types/d3": "^4.10.1",
+    "@types/node": "^8.0.33",
+    "typescript": "^2.5.3"
+  },
+  "dependencies": {
+    "@types/d3-selection": "^1.1.0",
+    "d3": "^4.11.0"
   }
 }

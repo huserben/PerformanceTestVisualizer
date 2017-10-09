@@ -59,7 +59,8 @@ export interface ITestResult {
 	state: string;
 	outcome : string;
 	durationInMs : number;
-	testCaseTitle : string;
+    testCaseTitle : string;
+    startedDate : string;
 }
 
 export function initialize(authenticationMethod: string, username: string, password: string, tfsServer: string, ignoreSslError: boolean)
