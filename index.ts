@@ -9,7 +9,7 @@ async function run(): Promise<void> {
         var username: string = process.argv[3];
         var password: string = process.argv[4];
         var server: string = process.argv[5];
-        var buildDefinitionName: string = process.argv[6];
+        var testRunName: string = process.argv[6];
 
         var numberOfItemsToFetch: number = 10;
         if (process.argv.length > 6) {
@@ -22,9 +22,9 @@ async function run(): Promise<void> {
             username,
             password,
             server,
-            false);
+            true);
 
-        var testRuns: tfsRestService.ITestRun[] = await tfsRestService.getTestRuns(buildDefinitionName, numberOfItemsToFetch);
+        var testRuns: tfsRestService.ITestRun[] = await tfsRestService.getTestRuns(testRunName, numberOfItemsToFetch);
 
         var testCaseDictionary: { [date: string]: { [name: string]: number } } = {};
         var availableTestCases: string[] = [];

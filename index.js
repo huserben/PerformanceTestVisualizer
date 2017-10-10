@@ -25,7 +25,7 @@ function run() {
                 var numberOfItemsToFetchString = process.argv[7];
                 numberOfItemsToFetch = parseInt(numberOfItemsToFetchString, 10);
             }
-            tfsRestService.initialize(authenticationMethod, username, password, server, false);
+            tfsRestService.initialize(authenticationMethod, username, password, server, true);
             var testRuns = yield tfsRestService.getTestRuns(buildDefinitionName, numberOfItemsToFetch);
             var testCaseDictionary = {};
             var availableTestCases = [];

@@ -1,6 +1,7 @@
 import * as WebRequest from "web-request";
 import fs = require("fs");
 import url = require("url");
+import { List } from 'linqts';
 import tfsConstants = require("./tfsconstants");
 import taskConstants = require("./taskconstants");
 
@@ -40,6 +41,8 @@ interface IValidationResult {
 
 interface ITestRunSummary {
     id: number;
+    name: string;
+    startedDate: string;
     state: string;
 }
 
@@ -56,15 +59,15 @@ export interface ITestRun {
 }
 
 export interface ITestResult {
-	state: string;
-	outcome : string;
-	durationInMs : number;
-    testCaseTitle : string;
-    startedDate : string;
+    state: string;
+    outcome: string;
+    durationInMs: number;
+    testCaseTitle: string;
+    startedDate: string;
 }
 
 export function initialize(authenticationMethod: string, username: string, password: string, tfsServer: string, ignoreSslError: boolean)
-: void {
+    : void {
     var baseUrl: string = `${encodeURI(tfsServer)}/${taskConstants.ApiUrl}/`;
 
     switch (authenticationMethod) {
@@ -306,10 +309,8 @@ async function getBuildDefinitionId(buildDefinitionName: string): Promise<string
     return result.value[0].id;
 }
 
-export async function getTestRuns(buildDefinitionName: string, numberOfRunsToFetch: number): Promise<ITestRun[]> {
+export async function getTestRuns(testRunName: string, numberOfRunsToFetch: number): Promise<ITestRun[]> {
     var testRunsUrl: string = `test/runs`;
-
-    var buildID: string = await getBuildDefinitionId(buildDefinitionName);
 
     var testRunSummaries: ITfsGetResponse<ITestRunSummary> = await WebRequest.json<ITfsGetResponse<ITestRunSummary>>(testRunsUrl, options);
     throwIfAuthenticationError(testRunSummaries);
@@ -317,17 +318,21 @@ export async function getTestRuns(buildDefinitionName: string, numberOfRunsToFet
     var testRunsToReturn: ITestRun[] = [];
 
     // reverse to fetch newest to oldest.
-    for (let testSummary of testRunSummaries.value.reverse()) {
-        if (testSummary.state.toLowerCase() === taskConstants.TestRunStateCompleted.toLowerCase()) {
-            var testRun: ITestRun = await WebRequest.json<ITestRun>(`${testRunsUrl}/${testSummary.id}`, options);
 
-            if (testRun.buildConfiguration.buildDefinitionId === buildID
-                && testRun.runStatistics[0].outcome.toLowerCase() === taskConstants.TestRunOutcomePassed.toLowerCase()) {
-                testRunsToReturn.push(testRun);
+    let testSummariesToGetResultsFor : ITestRunSummary[] = new List<ITestRunSummary>(testRunSummaries.value)
+        .Reverse()
+        .Where(x => x !== undefined && x.state.toLowerCase() === taskConstants.TestRunStateCompleted.toLowerCase()
+            && x.name === testRunName)
+        .ToArray();
 
-                if (testRunsToReturn.length >= numberOfRunsToFetch) {
-                    break;
-                }
+    for (let testSummary of testSummariesToGetResultsFor) {
+        var testRun: ITestRun = await WebRequest.json<ITestRun>(`${testRunsUrl}/${testSummary.id}`, options);
+
+        if (testRun.runStatistics[0].outcome.toLowerCase() === taskConstants.TestRunOutcomePassed.toLowerCase()) {
+            testRunsToReturn.push(testRun);
+
+            if (testRunsToReturn.length >= numberOfRunsToFetch) {
+                break;
             }
         }
     }
@@ -336,10 +341,10 @@ export async function getTestRuns(buildDefinitionName: string, numberOfRunsToFet
     return testRunsToReturn.reverse();
 }
 
-export async function getTestResults(testRun : ITestRun): Promise<ITestResult[]>{
-    var requestUrl : string = `test/runs/${testRun.id}/results`;
+export async function getTestResults(testRun: ITestRun): Promise<ITestResult[]> {
+    var requestUrl: string = `test/runs/${testRun.id}/results`;
 
-    var results : ITfsGetResponse<ITestResult> = await WebRequest.json<ITfsGetResponse<ITestResult>>(requestUrl, options);
+    var results: ITfsGetResponse<ITestResult> = await WebRequest.json<ITfsGetResponse<ITestResult>>(requestUrl, options);
 
     throwIfAuthenticationError(results);
 

@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@types/d3-selection": "^1.1.0",
-    "d3": "^4.11.0"
+    "d3": "^4.11.0",
+    "linqts": "^1.10.0"
   }
 }

@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const WebRequest = require("web-request");
 const fs = require("fs");
 const url = require("url");
+const linqts_1 = require("linqts");
 const tfsConstants = require("./tfsconstants");
 const taskConstants = require("./taskconstants");
 let options;
@@ -217,23 +218,24 @@ function getBuildDefinitionId(buildDefinitionName) {
         return result.value[0].id;
     });
 }
-function getTestRuns(buildDefinitionName, numberOfRunsToFetch) {
+function getTestRuns(testRunName, numberOfRunsToFetch) {
     return __awaiter(this, void 0, void 0, function* () {
         var testRunsUrl = `test/runs`;
-        var buildID = yield getBuildDefinitionId(buildDefinitionName);
         var testRunSummaries = yield WebRequest.json(testRunsUrl, options);
         throwIfAuthenticationError(testRunSummaries);
         var testRunsToReturn = [];
         // reverse to fetch newest to oldest.
-        for (let testSummary of testRunSummaries.value.reverse()) {
-            if (testSummary.state.toLowerCase() === taskConstants.TestRunStateCompleted.toLowerCase()) {
-                var testRun = yield WebRequest.json(`${testRunsUrl}/${testSummary.id}`, options);
-                if (testRun.buildConfiguration.buildDefinitionId === buildID
-                    && testRun.runStatistics[0].outcome.toLowerCase() === taskConstants.TestRunOutcomePassed.toLowerCase()) {
-                    testRunsToReturn.push(testRun);
-                    if (testRunsToReturn.length >= numberOfRunsToFetch) {
-                        break;
-                    }
+        let testSummariesToGetResultsFor = new linqts_1.List(testRunSummaries.value)
+            .Reverse()
+            .Where(x => x !== undefined && x.state.toLowerCase() === taskConstants.TestRunStateCompleted.toLowerCase()
+            && x.name === testRunName)
+            .ToArray();
+        for (let testSummary of testSummariesToGetResultsFor) {
+            var testRun = yield WebRequest.json(`${testRunsUrl}/${testSummary.id}`, options);
+            if (testRun.runStatistics[0].outcome.toLowerCase() === taskConstants.TestRunOutcomePassed.toLowerCase()) {
+                testRunsToReturn.push(testRun);
+                if (testRunsToReturn.length >= numberOfRunsToFetch) {
+                    break;
                 }
             }
         }
