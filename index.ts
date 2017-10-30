@@ -1,5 +1,4 @@
-import tfsRestService = require("./tfsrestservice.js");
-import taskConstants = require("./taskconstants.js");
+import tfsRestService = require("tfsrestservice");
 import fs = require("fs");
 
 async function run(): Promise<void> {
@@ -17,23 +16,25 @@ async function run(): Promise<void> {
             numberOfItemsToFetch = parseInt(numberOfItemsToFetchString, 10);
         }
 
-        tfsRestService.initialize(
+        var service : tfsRestService.ITfsRestService = new tfsRestService.TfsRestService();
+
+        service.initialize(
             authenticationMethod,
             username,
             password,
             server,
             true);
 
-        var testRuns: tfsRestService.ITestRun[] = await tfsRestService.getTestRuns(testRunName, numberOfItemsToFetch);
+        var testRuns: tfsRestService.ITestRun[] = await service.getTestRuns(testRunName, numberOfItemsToFetch);
 
         var testCaseDictionary: { [date: string]: { [name: string]: number } } = {};
         var availableTestCases: string[] = [];
 
         for (let testRun of testRuns) {
-            var testResults: tfsRestService.ITestResult[] = await tfsRestService.getTestResults(testRun);
+            var testResults: tfsRestService.ITestResult[] = await service.getTestResults(testRun);
 
             for (let result of testResults) {
-                if (result.outcome !== taskConstants.TestRunOutcomePassed) {
+                if (result.outcome !== tfsRestService.TestRunOutcomePassed) {
                     continue;
                 }
 
@@ -88,7 +89,7 @@ async function run(): Promise<void> {
         }
 
 
-        fs.writeFile("performanceValues.tsv", tsvFileString, function (err: Error) {
+        fs.writeFile("performanceValues.tsv", tsvFileString, function (err: Error): void {
             if (err != null) {
                 console.log(err);
             }

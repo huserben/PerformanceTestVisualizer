@@ -8,8 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const tfsRestService = require("./tfsrestservice.js");
-const taskConstants = require("./taskconstants.js");
+const tfsRestService = require("tfsrestservice");
 const fs = require("fs");
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -19,20 +18,21 @@ function run() {
             var username = process.argv[3];
             var password = process.argv[4];
             var server = process.argv[5];
-            var buildDefinitionName = process.argv[6];
+            var testRunName = process.argv[6];
             var numberOfItemsToFetch = 10;
             if (process.argv.length > 6) {
                 var numberOfItemsToFetchString = process.argv[7];
                 numberOfItemsToFetch = parseInt(numberOfItemsToFetchString, 10);
             }
-            tfsRestService.initialize(authenticationMethod, username, password, server, true);
-            var testRuns = yield tfsRestService.getTestRuns(buildDefinitionName, numberOfItemsToFetch);
+            var service = new tfsRestService.TfsRestService();
+            service.initialize(authenticationMethod, username, password, server, true);
+            var testRuns = yield service.getTestRuns(testRunName, numberOfItemsToFetch);
             var testCaseDictionary = {};
             var availableTestCases = [];
             for (let testRun of testRuns) {
-                var testResults = yield tfsRestService.getTestResults(testRun);
+                var testResults = yield service.getTestResults(testRun);
                 for (let result of testResults) {
-                    if (result.outcome !== taskConstants.TestRunOutcomePassed) {
+                    if (result.outcome !== tfsRestService.TestRunOutcomePassed) {
                         continue;
                     }
                     var date = new Date(result.startedDate);
