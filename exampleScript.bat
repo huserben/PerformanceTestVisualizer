@@ -1,2 +1,3 @@
 node index.js "Personal Access Token" "whatever" "sww3otrtvfaqi4sqcqqjceq23lxgvlyjfoftqox7272qc3vxyi2q" "https://benjsawesometfstest.visualstudio.com/DefaultCollection/Build Test" "MyTestRun" "5"
-python .\creategraphs.py
+python .\creategraphs.py performanceValues performanceGraphs
+python .\createhtml.py performanceGraphs "My Performance Test"
