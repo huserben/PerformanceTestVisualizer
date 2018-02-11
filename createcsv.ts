@@ -1,5 +1,6 @@
 import tfsRestService = require("tfsrestservice");
 import fs = require("fs");
+import shell = require("shelljs");
 
 export async function createCsvFiles(
     authenticationMethod: string,
@@ -9,7 +10,7 @@ export async function createCsvFiles(
     testRunName: string,
     outputFolder: string,
     numberOfItemsToFetch: number,
-    failIfDurationExceedsGivenTime: boolean,
+    failIfThresholdExceeded: boolean,
     exceedThreshold: number
 ): Promise<void> {
     var service: tfsRestService.ITfsRestService = new tfsRestService.TfsRestService();
@@ -47,8 +48,8 @@ export async function createCsvFiles(
         }
     }
 
-    if (writeCsvFiles(outputFolder, testCaseDictionary, failIfDurationExceedsGivenTime, exceedThreshold)) {
-        throw new Error("At least one test did exceed the set threshold.");
+    if (writeCsvFiles(outputFolder, testCaseDictionary, failIfThresholdExceeded, exceedThreshold)) {
+        console.error("At least one test did exceed the set threshold.");
     }
 }
 
@@ -60,11 +61,12 @@ function pad2(input: number): string {
 function cleanOutputFolder(folder: string): void {
     deleteFolderRecursive(folder);
 
-    fs.mkdir(folder, function (err: Error): void {
+    /*fs.mkdir(folder, function (err: Error): void {
         if (err != null) {
             console.log(err);
         }
-    });
+    });*/
+    shell.mkdir('-p', folder);
 }
 
 function deleteFolderRecursive(path: string) {

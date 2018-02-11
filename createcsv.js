@@ -10,7 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const tfsRestService = require("tfsrestservice");
 const fs = require("fs");
-function createCsvFiles(authenticationMethod, username, password, server, testRunName, outputFolder, numberOfItemsToFetch, failIfDurationExceedsGivenTime, exceedThreshold) {
+const shell = require("shelljs");
+function createCsvFiles(authenticationMethod, username, password, server, testRunName, outputFolder, numberOfItemsToFetch, failIfThresholdExceeded, exceedThreshold) {
     return __awaiter(this, void 0, void 0, function* () {
         var service = new tfsRestService.TfsRestService();
         service.initialize(authenticationMethod, username, password, server, true);
@@ -32,8 +33,8 @@ function createCsvFiles(authenticationMethod, username, password, server, testRu
                 testCaseDictionary[result.testCaseTitle][dateRun] = result.durationInMs / 1000;
             }
         }
-        if (writeCsvFiles(outputFolder, testCaseDictionary, failIfDurationExceedsGivenTime, exceedThreshold)) {
-            throw new Error("At least one test did exceed the set threshold.");
+        if (writeCsvFiles(outputFolder, testCaseDictionary, failIfThresholdExceeded, exceedThreshold)) {
+            console.error("At least one test did exceed the set threshold.");
         }
     });
 }
@@ -44,11 +45,12 @@ function pad2(input) {
 }
 function cleanOutputFolder(folder) {
     deleteFolderRecursive(folder);
-    fs.mkdir(folder, function (err) {
+    /*fs.mkdir(folder, function (err: Error): void {
         if (err != null) {
             console.log(err);
         }
-    });
+    });*/
+    shell.mkdir('-p', folder);
 }
 function deleteFolderRecursive(path) {
     if (fs.existsSync(path)) {
