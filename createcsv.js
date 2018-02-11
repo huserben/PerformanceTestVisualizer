@@ -10,23 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const tfsRestService = require("tfsrestservice");
 const fs = require("fs");
-function run() {
+function createCsvFiles(authenticationMethod, username, password, server, testRunName, outputFolder, numberOfItemsToFetch, failIfDurationExceedsGivenTime, exceedThreshold) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // first two argumnents are different things...
-            var authenticationMethod = process.argv[2];
-            var username = process.argv[3];
-            var password = process.argv[4];
-            var server = process.argv[5];
-            var testRunName = process.argv[6];
-            var numberOfItemsToFetch = 10;
-            if (process.argv.length > 6) {
-                var numberOfItemsToFetchString = process.argv[7];
-                numberOfItemsToFetch = parseInt(numberOfItemsToFetchString, 10);
-            }
             var service = new tfsRestService.TfsRestService();
             service.initialize(authenticationMethod, username, password, server, true);
-            cleanOutputFolder();
+            cleanOutputFolder(outputFolder);
             var testRuns = yield service.getTestRuns(testRunName, numberOfItemsToFetch);
             // group tests by testCase
             var testCaseDictionary = {};
@@ -44,20 +33,21 @@ function run() {
                     testCaseDictionary[result.testCaseTitle][dateRun] = result.durationInMs / 1000;
                 }
             }
-            writeCsvFiles(testCaseDictionary);
+            writeCsvFiles(outputFolder, testCaseDictionary);
         }
         catch (err) {
             console.log(err);
         }
     });
 }
+exports.createCsvFiles = createCsvFiles;
 function pad2(input) {
     var formattedNumber = ("0" + input).slice(-2);
     return formattedNumber;
 }
-function cleanOutputFolder() {
-    deleteFolderRecursive("performanceValues");
-    fs.mkdir("performanceValues", function (err) {
+function cleanOutputFolder(folder) {
+    deleteFolderRecursive(folder);
+    fs.mkdir(folder, function (err) {
         if (err != null) {
             console.log(err);
         }
@@ -78,7 +68,7 @@ function deleteFolderRecursive(path) {
     }
 }
 ;
-function writeCsvFiles(testCaseDictionary) {
+function writeCsvFiles(outputFolder, testCaseDictionary) {
     const Delimeter = ",";
     const NewLine = "\r\n";
     for (let testCaseTitle in testCaseDictionary) {
@@ -98,7 +88,7 @@ function writeCsvFiles(testCaseDictionary) {
                     console.log(`${testDate} - Ran for ${testDuration} seconds`);
                 }
             }
-            fs.writeFile(`performanceValues/${testCaseTitle}.csv`, csvFileString, function (err) {
+            fs.writeFile(`${outputFolder}/${testCaseTitle}.csv`, csvFileString, function (err) {
                 if (err != null) {
                     console.log(err);
                 }
@@ -107,4 +97,3 @@ function writeCsvFiles(testCaseDictionary) {
         }
     }
 }
-run();

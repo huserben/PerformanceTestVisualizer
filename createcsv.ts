@@ -1,21 +1,18 @@
 import tfsRestService = require("tfsrestservice");
 import fs = require("fs");
 
-async function run(): Promise<void> {
+export async function createCsvFiles(
+    authenticationMethod: string,
+    username: string,
+    password: string,
+    server: string,
+    testRunName: string,
+    outputFolder: string,
+    numberOfItemsToFetch: number,
+    failIfDurationExceedsGivenTime: boolean,
+    exceedThreshold: number
+): Promise<void> {
     try {
-        // first two argumnents are different things...
-        var authenticationMethod: string = process.argv[2];
-        var username: string = process.argv[3];
-        var password: string = process.argv[4];
-        var server: string = process.argv[5];
-        var testRunName: string = process.argv[6];
-
-        var numberOfItemsToFetch: number = 10;
-        if (process.argv.length > 6) {
-            var numberOfItemsToFetchString: string = process.argv[7];
-            numberOfItemsToFetch = parseInt(numberOfItemsToFetchString, 10);
-        }
-
         var service: tfsRestService.ITfsRestService = new tfsRestService.TfsRestService();
 
         service.initialize(
@@ -25,7 +22,7 @@ async function run(): Promise<void> {
             server,
             true);
 
-        cleanOutputFolder();
+        cleanOutputFolder(outputFolder);
 
         var testRuns: tfsRestService.ITestRun[] = await service.getTestRuns(testRunName, numberOfItemsToFetch);
 
@@ -50,7 +47,7 @@ async function run(): Promise<void> {
                 testCaseDictionary[result.testCaseTitle][dateRun] = result.durationInMs / 1000;
             }
         }
-        writeCsvFiles(testCaseDictionary);
+        writeCsvFiles(outputFolder, testCaseDictionary);
 
     } catch (err) {
         console.log(err);
@@ -62,17 +59,17 @@ function pad2(input: number): string {
     return formattedNumber;
 }
 
-function cleanOutputFolder(): void {
-    deleteFolderRecursive("performanceValues");
+function cleanOutputFolder(folder: string): void {
+    deleteFolderRecursive(folder);
 
-    fs.mkdir("performanceValues",  function (err: Error): void {
+    fs.mkdir(folder, function (err: Error): void {
         if (err != null) {
             console.log(err);
         }
     });
 }
 
-function deleteFolderRecursive(path: string){
+function deleteFolderRecursive(path: string) {
     if (fs.existsSync(path)) {
         fs.readdirSync(path).forEach(function (file, index) {
             var curPath = path + "/" + file;
@@ -86,7 +83,7 @@ function deleteFolderRecursive(path: string){
     }
 };
 
-function writeCsvFiles(testCaseDictionary: { [name: string]: { [date: string]: number; }; }) {
+function writeCsvFiles(outputFolder: string, testCaseDictionary: { [name: string]: { [date: string]: number; }; }): void {
     const Delimeter: string = ",";
     const NewLine: string = "\r\n";
 
@@ -115,7 +112,7 @@ function writeCsvFiles(testCaseDictionary: { [name: string]: { [date: string]: n
                 }
             }
 
-            fs.writeFile(`performanceValues/${testCaseTitle}.csv`, csvFileString, function (err: Error): void {
+            fs.writeFile(`${outputFolder}/${testCaseTitle}.csv`, csvFileString, function (err: Error): void {
                 if (err != null) {
                     console.log(err);
                 }
@@ -125,5 +122,3 @@ function writeCsvFiles(testCaseDictionary: { [name: string]: { [date: string]: n
         }
     }
 }
-
-run();

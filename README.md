@@ -12,7 +12,7 @@ To run the node script, run *npm install --only=production*.
 The scripts to create the line charts and the html file are written in python (v. 3). Install pip and install the packages *pandas*, *matplot* and *dominate* on the machine that runs those scripts.
 
 ## Creating the CSV Files
-The csv files are created by doing a query to TFS/VSTS. For this a node.js script is used (index.js). The script will search for test runs with a specific name on the server and then extract all the test cases into a csv file. The following parameters need to be supplied to the script (in order of appearance):  
+The csv files are created by doing a query to TFS/VSTS. For this a node.js script is used (runFromTerminal.js). The script will search for test runs with a specific name on the server and then extract all the test cases into a csv file. The following parameters need to be supplied to the script (in order of appearance):  
 - **Authentication Method**  (Possible Values: *OAuth Token*, *Personal Access Token*, *Basic Authentication*)  
 - **Username** (only needed if *Basic Authentication* was specified, otherwise use "")  
 - **Password** (the respective password or Token needed for the specified authentication method)  
