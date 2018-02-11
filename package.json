@@ -25,6 +25,8 @@
   "dependencies": {
     "@types/d3-selection": "^1.1.0",
     "d3": "^4.11.0",
+    "dat-table": "^1.0.1",
+    "line-graph": "^2.0.2",
     "linqts": "^1.10.0",
     "tfsrestservice": "^1.1.1"
   }

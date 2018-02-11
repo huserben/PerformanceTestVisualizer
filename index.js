@@ -26,9 +26,10 @@ function run() {
             }
             var service = new tfsRestService.TfsRestService();
             service.initialize(authenticationMethod, username, password, server, true);
+            cleanOutputFolder();
             var testRuns = yield service.getTestRuns(testRunName, numberOfItemsToFetch);
+            // group tests by testCase
             var testCaseDictionary = {};
-            var availableTestCases = [];
             for (let testRun of testRuns) {
                 var testResults = yield service.getTestResults(testRun);
                 for (let result of testResults) {
@@ -36,51 +37,74 @@ function run() {
                         continue;
                     }
                     var date = new Date(result.startedDate);
-                    var dateRun = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-                    if (!availableTestCases.some(x => x === result.testCaseTitle)) {
-                        availableTestCases.push(result.testCaseTitle);
+                    var dateRun = `${pad2(date.getDate())}-${pad2(date.getMonth() + 1)}-${date.getFullYear()}`;
+                    if (testCaseDictionary[result.testCaseTitle] === undefined) {
+                        testCaseDictionary[result.testCaseTitle] = {};
                     }
-                    if (testCaseDictionary[dateRun] === undefined) {
-                        testCaseDictionary[dateRun] = {};
-                    }
-                    testCaseDictionary[dateRun][result.testCaseTitle] = result.durationInMs / 1000;
+                    testCaseDictionary[result.testCaseTitle][dateRun] = result.durationInMs / 1000;
                 }
             }
-            const Tab = "\t";
-            const NewLine = "\r\n";
-            var tsvFileString = `date${Tab}`;
-            // write header
-            for (let testCase of availableTestCases) {
-                tsvFileString += `${testCase}${Tab}`;
-            }
-            tsvFileString += `${NewLine}`;
-            for (let key in testCaseDictionary) {
-                if (testCaseDictionary.hasOwnProperty(key)) {
-                    let testResultsByDate = testCaseDictionary[key];
-                    console.log("------------------------------");
-                    console.log(`Test Date: ${key}`);
-                    tsvFileString += `${key}${Tab}`;
-                    for (let testCase of availableTestCases) {
-                        if (testResultsByDate[testCase] === undefined) {
-                            // if there is no value for a testcase on a certain date we set it to null...
-                            testResultsByDate[testCase] = 0;
-                        }
-                        tsvFileString += `${testResultsByDate[testCase]}${Tab}`;
-                        console.log(`${testCase} - Ran for ${testResultsByDate[testCase]} seconds`);
-                    }
-                    tsvFileString += `${NewLine}`;
-                    console.log("------------------------------");
-                }
-            }
-            fs.writeFile("performanceValues.tsv", tsvFileString, function (err) {
-                if (err != null) {
-                    console.log(err);
-                }
-            });
+            writeCsvFiles(testCaseDictionary);
         }
         catch (err) {
             console.log(err);
         }
     });
+}
+function pad2(input) {
+    var formattedNumber = ("0" + input).slice(-2);
+    return formattedNumber;
+}
+function cleanOutputFolder() {
+    deleteFolderRecursive("performanceValues");
+    fs.mkdir("performanceValues", function (err) {
+        if (err != null) {
+            console.log(err);
+        }
+    });
+}
+function deleteFolderRecursive(path) {
+    if (fs.existsSync(path)) {
+        fs.readdirSync(path).forEach(function (file, index) {
+            var curPath = path + "/" + file;
+            if (fs.lstatSync(curPath).isDirectory()) {
+                deleteFolderRecursive(curPath);
+            }
+            else {
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
+    }
+}
+;
+function writeCsvFiles(testCaseDictionary) {
+    const Delimeter = ",";
+    const NewLine = "\r\n";
+    for (let testCaseTitle in testCaseDictionary) {
+        if (testCaseDictionary.hasOwnProperty(testCaseTitle)) {
+            let testResultsByTestCase = testCaseDictionary[testCaseTitle];
+            console.log("------------------------------");
+            console.log(`Test Name: ${testCaseTitle}`);
+            var csvFileString = "";
+            for (let testDate in testResultsByTestCase) {
+                if (testResultsByTestCase.hasOwnProperty(testDate)) {
+                    var testDuration = testResultsByTestCase[testDate];
+                    if (Number.isNaN(testDuration) || testDuration === undefined) {
+                        // if there is no value for a testcase on a certain date we set it to null...
+                        testDuration = 0;
+                    }
+                    csvFileString += `${testDate}${Delimeter}${testDuration}${NewLine}`;
+                    console.log(`${testDate} - Ran for ${testDuration} seconds`);
+                }
+            }
+            fs.writeFile(`performanceValues/${testCaseTitle}.csv`, csvFileString, function (err) {
+                if (err != null) {
+                    console.log(err);
+                }
+            });
+            console.log("------------------------------");
+        }
+    }
 }
 run();

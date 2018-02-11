@@ -1,1 +1,2 @@
-node index.js "Personal Access Token" "whatever" "sww3otrtvfaqi4sqcqqjceq23lxgvlyjfoftqox7272qc3vxyi2q" "https://benjsawesometfstest.visualstudio.com/DefaultCollection/Build Test" "VSTest Test Run debug any cpu" "5"
+node index.js "Personal Access Token" "whatever" "sww3otrtvfaqi4sqcqqjceq23lxgvlyjfoftqox7272qc3vxyi2q" "https://benjsawesometfstest.visualstudio.com/DefaultCollection/Build Test" "MyTestRun" "5"
+python .\creategraphs.py
