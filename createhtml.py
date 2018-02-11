@@ -24,7 +24,7 @@ if len(sys.argv) == 3:
 print('Input Directory: ', inputDirectory)
 print('Document Title: ', documentTitle)
 
-photos = glob.glob(inputDirectory + '/*.png')
+photos = glob.glob(inputDirectory + '/*')
 
 with document(title=documentTitle) as doc:
     h1(documentTitle)
