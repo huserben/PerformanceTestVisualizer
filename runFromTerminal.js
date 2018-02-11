@@ -25,7 +25,8 @@ function run() {
             var numberOfItemsToFetchString = process.argv[7];
             numberOfItemsToFetch = parseInt(numberOfItemsToFetchString, 10);
         }
-        createCsv.createCsvFiles(authenticationMethod, username, password, server, testRunName, "performanceValues", numberOfItemsToFetch, false, 12);
+        createCsv.createCsvFiles(authenticationMethod, username, password, server, testRunName, "performanceValues", numberOfItemsToFetch, false, 0.5);
     });
 }
 run();
+//# sourceMappingURL=runFromTerminal.js.map

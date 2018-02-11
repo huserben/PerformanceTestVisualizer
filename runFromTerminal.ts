@@ -28,7 +28,7 @@ async function run(): Promise<void> {
         "performanceValues",
         numberOfItemsToFetch,
         false,
-        12);
+        0.5);
 }
 
 run();
