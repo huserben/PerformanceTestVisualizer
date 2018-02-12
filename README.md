@@ -7,7 +7,8 @@ The script that fetches the csv files is also available as Task to be included i
 All the files are under the folder *perfromanceTestVisualizerTask*.
 
 ## Usage
-The repository contains the exampleScript.bat file that executes all scripts in order to fetch sample data from VSTS, create the line charts and put it into an html file. After the script executed there will be a *index.html* file that contains all created line chart images.
+The repository contains the exampleScript.bat file that executes all scripts in order to fetch sample data from VSTS, create the line charts and put it into an html file. After the script executed there will be a *index.html* file that contains all created line chart images.  
+For the usage of the VSTS Task, please check out the [Task-specific Description](https://github.com/huserben/PerformanceTestVisualizer/blob/master/overview.md).
 
 ### Prerequites
 In order to run all 3 scripts the machine needs to have node.js and python installed.  
