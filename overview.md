@@ -5,6 +5,13 @@ This task allows to query for TestRuns with a specific name and create for each 
 ## Usage
 After installing the extension you will find a new Task called *Testrun Performance Analyzer* available in the build tasks under the *Test* category.  
 
+### Prerequisite
+A prerequisite of the task is that the build definition has access to the OAuth Token. This can be configured in the build definition under Options:
+
+![Token Access](https://raw.githubusercontent.com/huserben/PerformanceTestVisualizer/master/images/tokenAccess.PNG)
+
+**If this is not done, the task will fail!**
+
 ### Configuration
 After you added the task, you have the following configuration section:  
 
