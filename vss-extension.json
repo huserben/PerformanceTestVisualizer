@@ -1,0 +1,73 @@
+{
+    "manifestVersion": 1,
+    "id": "test-run-performance-analyzer",
+    "name": "Testrun Performance Analyzer",
+    "version": "0.1.1",
+    "publisher": "benjhuser",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],    
+    "description": "Build task that creates csv files for all test cases of a test run based on the run duration of the tests.",
+    "categories": [
+        "Build and release"
+    ],
+    "icons": {
+        "default": "images/logo.png"        
+    },
+	"tags" :[
+		"test",
+		"performance",
+		"test run",
+        "analyze",
+        "csv"
+	],
+	"screenshots": [
+        {
+            "path": "images/taskconfiguration.png"
+        }
+	],
+	"content":{
+		"details":{
+			"path": "overview.md"
+		},
+		"license": {
+			"path": "LICENSE"
+		}
+	},
+	"links":{
+		"repository":{
+			"uri": "https://github.com/huserben/PerformanceTestVisualizer"
+		},
+		"license":{
+			"uri": "https://github.com/huserben/PerformanceTestVisualizer/blob/master/LICENSE"
+		}
+	},
+	"repository": {
+		"type": "git",
+		"uri":	"https://github.com/huserben/PerformanceTestVisualizer"
+	},
+    "files": [
+        {
+            "path": "performanceTestVisualizerTask"
+		}
+    ],
+    "contributions": [
+        {
+            "id": "test-run-performance-analyzer",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "performanceTestVisualizerTask"
+            }
+        }
+    ],
+	"branding": {
+        "color": "rgb(255, 153, 0)",
+        "theme": "light"
+    },
+	"public": false
+}

@@ -2,6 +2,9 @@
 
 Contains 3 scripts that allow to visualize the length of testruns that were ran on a TFS/VSTS instance.  
 The first script will fetch the data from the server and write it into CSV files. Then out of the csv files line charts are created (one chart per csv file) and in the end all images are automatically put into a html file.  
+The script that fetches the csv files is also available as Task to be included into VSTS. If customization is needed, the script can be downloaded and altered and be used from the commandline as the example is showing.  
+
+All the files are under the folder *perfromanceTestVisualizerTask*.
 
 ## Usage
 The repository contains the exampleScript.bat file that executes all scripts in order to fetch sample data from VSTS, create the line charts and put it into an html file. After the script executed there will be a *index.html* file that contains all created line chart images.

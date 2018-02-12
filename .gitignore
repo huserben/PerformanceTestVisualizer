@@ -57,7 +57,8 @@ typings/
 # dotenv environment variables file
 .env
 
-performanceGraphs
-performanceValues
-TaskOutput
-TaskPerformanceGraph
+
+performanceTestVisualizerTask/performanceGraphs
+performanceTestVisualizerTask/performanceValues
+performanceTestVisualizerTask/TaskOutput
+performanceTestVisualizerTask/TaskPerformanceGraphs
