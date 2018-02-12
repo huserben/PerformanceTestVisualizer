@@ -49,7 +49,7 @@ export async function createCsvFiles(
     }
 
     if (writeCsvFiles(outputFolder, testCaseDictionary, failIfThresholdExceeded, exceedThreshold)) {
-        console.error("At least one test did exceed the set threshold.");
+        throw new Error("At least one test did exceed the set threshold");
     }
 }
 

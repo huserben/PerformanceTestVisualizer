@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "test-run-performance-analyzer",
     "name": "Testrun Performance Analyzer",
-    "version": "0.1.1",
+    "version": "1.0.0",
     "publisher": "benjhuser",
     "targets": [
         {
@@ -30,7 +30,7 @@
 	],
 	"content":{
 		"details":{
-			"path": "overview.md"
+            "path": "overview.md"
 		},
 		"license": {
 			"path": "LICENSE"
@@ -69,5 +69,5 @@
         "color": "rgb(255, 153, 0)",
         "theme": "light"
     },
-	"public": false
+	"public": true
 }

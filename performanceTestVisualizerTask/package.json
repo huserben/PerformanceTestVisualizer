@@ -20,8 +20,7 @@
     "@types/d3": "^4.11.0",
     "@types/node": "^8.0.47",
     "@types/q": "^1.0.7",
-    "typescript": "^2.5.3",
-    "web-request": "^1.0.7"
+    "typescript": "^2.5.3"
   },
   "dependencies": {
     "@types/d3-selection": "^1.1.0",
@@ -32,6 +31,7 @@
     "linqts": "^1.10.0",
     "shelljs": "^0.8.1",
     "tfsrestservice": "^1.1.1",
-    "vsts-task-lib": "^2.2.1"
+    "vsts-task-lib": "^2.2.1",
+    "web-request": "^1.0.7"
   }
 }
