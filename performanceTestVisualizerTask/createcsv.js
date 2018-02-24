@@ -81,7 +81,10 @@ function writeCsvFiles(outputFolder, testCaseDictionary, failIfThresholdExceeded
             var secondLastTestRunDuration = NaN;
             for (let testDate in testResultsByTestCase) {
                 if (testResultsByTestCase.hasOwnProperty(testDate)) {
-                    secondLastTestRunDuration = lastTestRunDuration;
+                    if (lastTestRunDuration !== 0) {
+                        // only set previous value if the test was actually run...
+                        secondLastTestRunDuration = lastTestRunDuration;
+                    }
                     var testDuration = testResultsByTestCase[testDate];
                     if (Number.isNaN(testDuration) || testDuration === undefined) {
                         // if there is no value for a testcase on a certain date we set it to null...

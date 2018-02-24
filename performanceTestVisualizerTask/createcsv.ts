@@ -109,7 +109,10 @@ function writeCsvFiles(
 
             for (let testDate in testResultsByTestCase) {
                 if (testResultsByTestCase.hasOwnProperty(testDate)) {
-                    secondLastTestRunDuration = lastTestRunDuration;
+                    if (lastTestRunDuration !== 0) {
+                        // only set previous value if the test was actually run...
+                        secondLastTestRunDuration = lastTestRunDuration;
+                    }
 
                     var testDuration: number = testResultsByTestCase[testDate];
                     if (Number.isNaN(testDuration) || testDuration === undefined) {
@@ -118,7 +121,6 @@ function writeCsvFiles(
                     }
 
                     lastTestRunDuration = testDuration;
-
                     csvFileString += `${testDate}${Delimeter}${testDuration}${NewLine}`;
                     console.log(`${testDate} - Ran for ${testDuration} seconds`);
                 }
