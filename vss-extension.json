@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "test-run-performance-analyzer",
     "name": "Testrun Performance Analyzer",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "publisher": "benjhuser",
     "targets": [
         {
